@@ -1,17 +1,6 @@
-import { useState } from "react";
 
-function ProductCard({ nama, harga, gambar }) {
-  const [jumlah, setjumlah] = useState(0);
 
-  const tambah = () => {
-    setjumlah(jumlah + 1);
-  };
-
-  const kurang = () => {
-    if (jumlah > 0) {
-      setjumlah(jumlah - 1);
-    }
-  };
+function ProductCard({ nama, harga, gambar, jumlah, onTambah, onKurang}) {
 
   return (
     <div className="flex grid grid-cols-3 grid-rows-1 gap-1">
@@ -25,7 +14,7 @@ function ProductCard({ nama, harga, gambar }) {
 
       <div className="flex items-center justify-center px-5">
         <button
-          onClick={kurang}
+          onClick={onKurang}
           className="w-8 h-8 text-xl
                 rounded-full border-2 border-black items-center justify-center flex leading-none "
         >
@@ -35,7 +24,7 @@ function ProductCard({ nama, harga, gambar }) {
         </button>
         <p id="menu" className="p-1 text-center">{jumlah}</p>
         <button
-          onClick={tambah}
+          onClick={onTambah}
           className="w-8 h-8 text-xl items-center
                 rounded-full border-2 border-black justify-center flex leading-none "
         >
@@ -43,6 +32,7 @@ function ProductCard({ nama, harga, gambar }) {
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
         </button>
+
       </div>
 
     </div>
