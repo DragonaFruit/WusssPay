@@ -12,6 +12,8 @@ import esteler from "../assets/esteler.jpg";
 
 export default function Home() {
 
+
+
     const [isOpen, setIsOpen] = useState(false);
     const [cart, setCart] = useState([])
 
@@ -37,32 +39,38 @@ export default function Home() {
         {
             nama: "Nasi Goreng",
             harga: 25000,
-            jumlah: jumlah.nasiGoreng
+            jumlah: jumlah.nasiGoreng,
+            gambar: nasigoreng
         },
         {
             nama: "Cilok",
             harga: 15000,
-            jumlah: jumlah.cilok
+            jumlah: jumlah.cilok,
+            gambar: cilok
         },
         {
             nama: "Mie Ayam",
             harga: 23000,
-            jumlah: jumlah.mieAyam
+            jumlah: jumlah.mieAyam,
+            gambar: mieayam
         },
         {
             nama: "lemon tea",
             harga: 7000,
-            jumlah: jumlah.lemonTea
+            jumlah: jumlah.lemonTea,
+            gambar: lemontea
         },
         {
             nama: "Matcha",
             harga: 10000,
-            jumlah: jumlah.matcha
+            jumlah: jumlah.matcha,
+            gambar: matcha
         },
         {
             nama: "EsTeler",
             harga: 10000,
-            jumlah: jumlah.esTeler
+            jumlah: jumlah.esTeler,
+            gambar: esteler
         }
     ];
 
@@ -70,10 +78,19 @@ export default function Home() {
         (produk) => produk.jumlah > 0
     );
 
+        fetch('http://100.73.85.52:3000/pesan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(yangDipilih) 
+    })
+
+
     setCart(yangDipilih);
 
     console.log(yangDipilih)
 };
+
+
 
     return (
         <div className="font-poppins">
@@ -161,7 +178,13 @@ export default function Home() {
         </h2>
 
         {cart.map((produk) => (
-          <div key={produk.nama} className="p-4">
+            
+          <div key={produk.nama} className="flex grid grid-cols-3 grid-rows-1 gap-1">
+            <img src={produk.gambar} alt={produk.nama} className="w-30 rounded-4xl px-3 py-3" />
+            
+            <div className="flex flex-col justify-center">
+            
+
             <p className="text-xl font-bold">
                 {produk.nama}
             </p>
@@ -173,6 +196,7 @@ export default function Home() {
             <p>
               jumlah: {produk.jumlah}
             </p>
+            </div>
           </div>      
         ))}
       </div>
