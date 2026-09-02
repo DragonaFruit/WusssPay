@@ -78,16 +78,9 @@ export default function Home() {
         (produk) => produk.jumlah > 0
     );
 
-        fetch('http://100.73.85.52:3000/pesan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(yangDipilih) 
-    })
-
-
     setCart(yangDipilih);
 
-    console.log(yangDipilih)
+    
 };
 
 
@@ -165,41 +158,93 @@ export default function Home() {
                   addToCart(); 
                   setIsOpen(true);
                   }} 
-                  className="w-80 h-15 border-3 bg-[var(--color-second)] font-semibold text-white rounded-full">Masukkan keranjang</button>
+                  className=
+                  "w-80 h-15 border-3 bg-[var(--color-second)] font-semibold text-white rounded-full">Masukkan keranjang</button>
             
             </div>
 
             
-    {/* === Sistem Overlay ==== */}
 
-      <div className={`fixed right-0 left-0 bottom-0 bg-[var(--color-third)] h-full transition-transform duration-300 ease-out ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}>
-        <h2 className="text-2xl font-bold p-5">
-          Keranjang
-        </h2>
 
-        {cart.map((produk) => (
-            
-          <div key={produk.nama} className="flex grid grid-cols-3 grid-rows-1 gap-1">
-            <img src={produk.gambar} alt={produk.nama} className="w-30 rounded-4xl px-3 py-3" />
-            
-            <div className="flex flex-col justify-center">
-            
+            {/* === Sistem Overlay ==== */}
+            <div className={`fixed inset-0 h-[100dvh] bg-slate-50 z-50 flex flex-col transition-transform duration-300 ease-out ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}>
 
-            <p className="text-xl font-bold">
-                {produk.nama}
-            </p>
+                {/* Header */}
+                <div className="p-4 border-b border-gray-200 bg-white flex justify-between items-center shrink-0 shadow-sm">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-800">Keranjang Pesanan</h2>
+                        <p className="text-xs text-gray-500">{cart.length} Jenis Produk Dipilih</p>
+                    </div>
+                    <button 
+                        onClick={() => setIsOpen(false)}
+                        className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 font-bold transition-colors cursor-pointer"
+                        >
+                            ✕
+                    </button>
+                </div>
 
-            <p>
-              Rp {produk.harga.toLocaleString("id-ID")}
-            </p>
+                {/* Area Scroll Daftar Produk */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 bg-slate-50">            
+                    {cart.map((produk) => (
+                    <div key={produk.nama} className="flex items-center gap-3 bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
+                        <img src={produk.gambar} alt={produk.nama} className="w-16 h-16 object-cover rounded-xl shrink-0" />
 
-            <p>
-              jumlah: {produk.jumlah}
-            </p>
-            </div>
-          </div>      
-        ))}
-      </div>
+                        <div className="flex-1">
+                            <p className="font-bold text-gray-800">{produk.nama}</p>
+                            <p className="text-sm font-semibold text-rose-500">Rp {produk.harga.toLocaleString("id-ID")}</p>
+                        </div>
+
+                        <div className="bg-slate-100 px-3 py-1 rounded-lg text-sm font-bold text-gray-700">
+                            x{produk.jumlah}
+                        </div>
+                    </div>      
+                    ))}
+                </div>
+
+                {/* Box Bill Pembayaran (Solid Bottom) */}
+                <div className="p-5 border-t border-gray-200 bg-white shrink-0 flex flex-col gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-3xl">
+                    <div className="space-y-1 text-sm border-b border-gray-100 pb-3">
+                        <div className="flex justify-between text-gray-500">
+                            <span>Subtotal Pesanan</span>
+                            <span>Rp {cart.reduce((total, p) => total + (p.harga * p.jumlah), 0).toLocaleString("id-ID")}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-500">
+                            <span>Biaya Layanan</span>
+                            <span className="text-emerald-600 font-medium">Gratis</span>
+                        </div>
+                        <div className="flex justify-between items-center text-base font-extrabold text-gray-900 pt-2">
+                            <span>Total Pembayaran</span>
+                            <span className="text-xl text-rose-500">
+                                Rp {cart.reduce((total, p) => total + (p.harga * p.jumlah), 0).toLocaleString("id-ID")}
+                            </span>
+                        </div>
+                    </div>  
+                </div>
+
+                <button 
+                    onClick={async () => {
+                    if (cart.length === 0) return alert("Keranjang kamu masih kosong!");
+                    try {
+                        const response = await fetch('http://100.73.85.52:3000/pesan', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                            pesanan: cart,
+                            totalHarga: cart.reduce((total, p) => total + (p.harga * p.jumlah), 0)
+                        }) 
+                    });
+                        if (response.ok) alert("Pesanan berhasil dikirim!");
+                        else alert("Gagal mengirim pesanan");
+                        } catch (error) {
+                        alert("Terjadi kesalahan koneksi ke server Backend.");
+                    }
+                    }}
+                    className="w-full py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl text-center shadow-lg shadow-rose-200 active:scale-[0.98] transition-all"
+                    >
+                    Pesan Sekarang
+                </button>
         </div>
+
+    </div>
     );
 }
